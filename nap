@@ -1,0 +1,20 @@
+#!/bin/bash
+
+set -eu -o pipefail
+
+if [ "$#" -ne 1 ]; then
+    printf "usage: %s <deadline>\n" "$0" >&2
+    exit 1
+fi
+
+next="$(date --date "$1" +%s)"
+now="$(date +%s)"
+
+delta="$(( "${next}" - "${now}" ))"
+if [ 0 -gt "${delta}" ]; then
+    DAY_IN_SEC="86400"
+    delta="$(( ("${delta}" % "${DAY_IN_SEC}") + "${DAY_IN_SEC}" ))"
+fi
+
+printf "sleep for %d seconds\n" "${delta}"
+exec sleep -- "${delta}"
